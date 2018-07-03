@@ -110,14 +110,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BitStream.cpp" />
-    <ClCompile Include="GolombEncoder.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="zjw_bitFile.cpp" />
+    <ClCompile Include="zjw_golombCoder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BitStream.h" />
-    <ClInclude Include="GolombDecoder.h" />
-    <ClInclude Include="GolombEncoder.h" />
+    <ClInclude Include="zjw_bitFile.h" />
+    <ClInclude Include="zjw_golombCoder.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="code.txt" />
@@ -125,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="golomb.gl" />
+    <None Include="golombRicd.gr" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

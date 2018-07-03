@@ -1,0 +1,53 @@
+/*
+* author: Jiawei Zhou
+* time: 2018/7/3
+* head file: Golomb coding的实现(Golomb Rice  的实现 m是2的指数)
+*/
+
+#pragma once
+#include <iostream>
+#include <string>
+#include <bitset>
+#include <fstream>
+#include <assert.h>
+#include "zjw_bitFile.h"
+
+
+
+class GolombCoder
+{
+private:
+	string fileName;
+	uint64_t m;
+	uint64_t k;
+
+public:
+	BitReadFile  *bitReadFile;
+	BitWriteFile *bitWriteFile;
+
+public:
+	//传递K值
+	GolombCoder(uint64_t k, string fileName="golombRicd.gr");
+	~GolombCoder();
+
+	//对num进行Golomb Rice的编码
+	void encode(uint64_t num);
+
+	//解析出来的返回值：num
+	void decode(uint64_t& num);
+
+private:
+
+	//利用Golomb Rice 对 num进行编码，返回值是编码后的码元长度。
+	//use it must call  open close func in class bitWriteFile .
+	void rice_golombEncode(uint64_t num);
+
+	//Exp Golomb
+	void exp_golombEncode(uint64_t num);
+
+	//返回的是解析出来的值
+	//use it must call  open close func in class bitWriteFile .
+	uint64_t rice_golombDecode();
+	//Exp Golomb
+	uint64_t exp_golombDecode();
+};

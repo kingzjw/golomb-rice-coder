@@ -15,24 +15,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BitStream.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GolombEncoder.cpp">
+    <ClCompile Include="zjw_bitFile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="zjw_golombCoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BitStream.h">
+    <ClInclude Include="zjw_bitFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GolombDecoder.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GolombEncoder.h">
+    <ClInclude Include="zjw_golombCoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -42,5 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="golomb.gl" />
+    <None Include="golombRicd.gr" />
   </ItemGroup>
 </Project>

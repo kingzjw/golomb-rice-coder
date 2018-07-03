@@ -3,12 +3,23 @@
 * time: 2018/7/2
 * head file: 只需要给一个二进制的文件名，就可以不断的通过接口按位读取内容。也可以按位保存内容。
 *			 对外隐藏缓冲等功能。/Users/king/Desktop/compress/zjw_bitFile.cpp
+* using example:
+*	BitReadFile class: 
+*		1. open must be called
+*		2. getBit() call by user 
+*		3. close must be called
+*	BitWriteFile
+*		1. open must be called
+*		2. putBit() 
+*		3. close must be called
+*	
 */
+
 #pragma once
 #include <iostream>
 #include <string>
 #include <bitset>
-#include<fstream>
+#include <fstream>
 #include <assert.h>
 
 using namespace std;
@@ -21,7 +32,7 @@ static const int byteBufferLength = 516;
 class ReadBuffer
 {
 private:
-	fstream *filePtr;
+	ifstream *filePtr;
 
 	//==================bit========================
 
@@ -43,15 +54,15 @@ private:
     
 public:
     // 构造函数
-    ReadBuffer(fstream *filePtr);
+    ReadBuffer(ifstream *filePtr);
 	~ReadBuffer();
 
     //返回false表示，没有拿到bit.功能：从bit buffer 中取出的一个bit，当bitbuffer不够的时候，自动从byte buffer中取新的数据
     bool getBit(bool &bit);
 
 private:
-	//从bytebuffer中只拿一个byte，返回值如果是false说明，数据不够了
-	bool getByte(uint8_t & byte);
+	//从bytebuffer中只拿一个byte，返回值如果是false说明，文件中数据不够了。
+	bool getByteFromByteBuffer(uint8_t & byte);
 
     //返回的是保存到bit buffer的数据数量， 从byte buffer拿一个新的byte放到bit buffer中
     uint8_t getNextBytesFromByteBuffer();
@@ -64,8 +75,8 @@ private:
 //BitBuffer 是一个字节的容量。
 class WriteBuffer
 {
-[private:
-	fstream *filePtr;
+private:
+	ofstream *filePtr;
 
 	// 使用bitset缓存bit
 	std::bitset<bitBufferLength> bitBuffer;
@@ -73,8 +84,6 @@ class WriteBuffer
 	int  bitPos;
 	// 已经存有的bit 的个数
 	uint64_t validBitsNum;
-
-	//==================byte========================
 
 	//unsigned char Byte数据
 	uint8_t *byteBuffer;
@@ -88,17 +97,18 @@ private:
 	//从bit buffer中获取一个byte，获取之后已经移除这个byte了。
 	bool getOneByteFromBitBuffer(uint8_t & byte);
 
-    //把8个bits打成byte放到Byte中。不满8个bits仍然留在bitbuffer中
+    // 把8个bits打成byte放到Byte中。不满8个bits仍然留在bitbuffer中
     void putBitsToByteBuffer();
 
-	void putOneByteToByteBuffer(uint8_t & byte);
+	void putOneByteToByteBuffer(uint8_t byte);
 
     // 向bitset中写入一个byte
     void putBytesBufferToFile();
 
 public:
 	// 构造函数
-	WriteBuffer(fstream *filePtr);
+	WriteBuffer(ofstream *filePtr);
+
 	~WriteBuffer();
 
 	// 向bitset中写入一个bit
@@ -111,64 +121,59 @@ public:
 	void fillout();
 };
 
+
 /*
 * 对外的接口类.提供按位的操作。
-* 切换读写，要改变state，而且要重新打开关闭文件。
 */
 class BitReadFile
 {
 private:
 	//要读取，或者要写入的二进制文件
-	fstream file;
+	ifstream file;
 	string path;
-    //true: write, false: read
-    bool state;
-
+	ReadBuffer * readBuffer;
+    
 public:
 
-	BitReadFile( bool state);
+	BitReadFile(string path);
 	~BitReadFile();
 
 	bool isOpen();
 	bool open(string filePath);
+	bool open();
 	void close();
 
-	//返回值是：是否成功。参数是返回值
+	//返回值是：是否得到一个bit,如果false 表示到了文件末尾。参数是返回值
 	bool getBit(bool & b_out);
-
-	//写人一个Bit
-	void putBit(bool & b_in);
-
-	//同一个元素，同时存放多次
-	void putBit(bool & b_in, const int& n);
-
 };
 
+/*
+* 对外的接口类.提供按位的操作。
+*/
 class BitWriteFile
 {
 private:
 	//要读取，或者要写入的二进制文件
-	fstream file;
+	ofstream file;
 	string path;
-	//true: write, false: read
-	bool state;
-
+	WriteBuffer * writeBuffer;
 public:
-
-	BitReadFile(bool state);
-	~BitReadFile();
+	BitWriteFile(string path);
+	~BitWriteFile();
 
 	bool isOpen();
 	bool open(string filePath);
+	bool open();
 	void close();
 
-	//返回值是：是否成功。参数是返回值
-	bool getBit(bool & b_out);
-
 	//写人一个Bit
-	void putBit(bool & b_in);
+	void putBit(bool b_in);
+	void putBit(int b_in);
+
 
 	//同一个元素，同时存放多次
-	void putBit(bool & b_in, const int& n);
+	void putBit(bool b_in, int n);
+	void putBit(int  b_in, int n);
+
 
 };
