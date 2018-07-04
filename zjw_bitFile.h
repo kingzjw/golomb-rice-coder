@@ -24,8 +24,8 @@
 
 using namespace std;
 
-//bitBufferLength 一定要是8的倍数
-static const int bitBufferLength = 8; 
+//bitBufferLength 一定要是8的倍数,bitBufferLength不要大于64
+static const int bitBufferLength = 32; 
 static const int byteBufferLength = 512; 
 
 //BitBuffer 是一个字节的容量。
@@ -108,7 +108,7 @@ private:
 public:
 	// 构造函数
 	WriteBuffer(ofstream *filePtr);
-
+	//WriteBuffer(ofstream *filePtr);
 	~WriteBuffer();
 
 	// 向bitset中写入一个bit
@@ -156,7 +156,7 @@ private:
 	//要读取，或者要写入的二进制文件
 	ofstream file;
 	string path;
-	WriteBuffer * writeBuffer;
+	WriteBuffer *writeBuffer;
 public:
 	BitWriteFile(string path);
 	~BitWriteFile();

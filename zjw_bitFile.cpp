@@ -5,6 +5,7 @@ ReadBuffer::ReadBuffer(ifstream * filePtr)
 {
 	assert(filePtr);
 	assert(bitBufferLength % 8 == 0);
+	assert(byteBufferLength % 8 == 0);
 
 
 	//file
@@ -140,6 +141,7 @@ WriteBuffer::WriteBuffer(ofstream * filePtr)
 {
 	assert(filePtr);
 	assert(bitBufferLength % 8 == 0);
+	assert(byteBufferLength % 8 == 0);
 
 	//file
 	this->filePtr = filePtr;
@@ -289,7 +291,8 @@ BitReadFile::BitReadFile(string path)
 BitReadFile::~BitReadFile()
 {
 	//delete path;
-	delete readBuffer;
+	if(readBuffer)
+		delete readBuffer;
 }
 
 bool BitReadFile::isOpen()
@@ -346,7 +349,8 @@ BitWriteFile::BitWriteFile(string path)
 BitWriteFile::~BitWriteFile()
 {
 	//delete path;
-	delete writeBuffer;
+	/*if(writeBuffer)
+		delete writeBuffer;*/
 }
 
 bool BitWriteFile::isOpen()
@@ -381,6 +385,7 @@ bool BitWriteFile::open(string filePath)
 		cout << "BitWriteFile open file: " << filePath << "success." << endl;
 	}
 	writeBuffer = new WriteBuffer(&file);
+	//writeBuffer = WriteBuffer(&file);
 	return true;
 }
 
@@ -411,34 +416,41 @@ bool BitWriteFile::open()
 		cout << "BitReadFile open file: " << path << "success." << endl;
 	}
 	writeBuffer = new WriteBuffer(&file);
+	//writeBuffer = WriteBuffer(&file);
 	return true;
 }
 
 void BitWriteFile::close()
 {
 	writeBuffer->fillout();
+	//writeBuffer.fillout();
 	file.close();
 }
 
 void BitWriteFile::putBit(bool b_in)
 {
 	writeBuffer->putBit(b_in);
+	//writeBuffer.putBit(b_in);
 }
 
 void BitWriteFile::putBit(int  b_in)
 {
 	writeBuffer->putBit(b_in);
+	//writeBuffer.putBit(b_in);
 
 }
 
 void BitWriteFile::putBit(bool  b_in,  int  n)
 {
 	writeBuffer->putBit(b_in, n);
+	//writeBuffer.putBit(b_in, n);
+
 }
 
 void BitWriteFile::putBit(int  b_in, int  n)
 {
 	writeBuffer->putBit(b_in, n);
+	//writeBuffer.putBit(b_in, n);
 }
 
 

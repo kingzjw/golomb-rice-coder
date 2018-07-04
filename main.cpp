@@ -6,7 +6,7 @@
 
 using namespace std;
 
-static const int length = 50000;
+static const int length = 10000;
 static const int  max = 20;
 
 int main()
@@ -22,41 +22,45 @@ int main()
 	//////////////////////////////////////////////////////
 
 	//uint64_t表示的是 unsigned long long。
-	//uint64_t *nums = new uint64_t[length];
+	uint64_t *nums = new uint64_t[length];
 
-	//ofstream codeOfs;
-	//codeOfs.open("code.txt");
-	////random number generator
-	//std::random_device rd;
-	//for (int n = 0; n < length; ++n)
-	//{
-	//	nums[n] = rd() % max;
-	//	codeOfs << nums[n] << endl;
-	//}
-	//codeOfs.close();
-	
+	ofstream codeOfs;
+	codeOfs.open("code.txt");
+	//random number generator
+	std::random_device rd;
+	for (int n = 0; n < length; ++n)
+	{
+		nums[n] = rd() % max;
+		codeOfs << nums[n] << endl;
+	}
+	codeOfs.close();
 
-	GolombCoder coder= GolombCoder(k);
+	//encoder
+	GolombCoder coder = GolombCoder(k);
 	
 	coder.bitWriteFile->open();
 
-	for (int i = 0; i < 1000; i++)
+	for (int i = 0; i < length; i++)
 	{
-		coder.encode(18);
+		coder.encode(nums[i]);
 	}
 
 	coder.bitWriteFile->close();
 
+
+	//decoder
 	coder.bitReadFile->open();
+
+	ofstream of;
+	of.open("decode.txt");
+
 	uint64_t res = 0;
-	coder.decode(res);
-	cout << "res:" << res << endl;
-	coder.decode(res);
-	cout << "res:" << res << endl;
-	coder.decode(res);
-	cout << "res:" << res << endl;
-	coder.decode(res);
-	cout << "res:" << res << endl;
+	for (int i = 0; i < length; i++)
+	{
+		coder.decode(res);
+		of << res << endl;
+	}
+	of.close();
 	coder.bitReadFile->close();
 
 	

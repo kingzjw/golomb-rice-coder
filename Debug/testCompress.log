@@ -1,7 +1,2 @@
-﻿  zjw_bitFile.cpp
-e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_bitfile.cpp(105): warning C4244: “return”: 从“uint64_t”转换到“uint8_t”，可能丢失数据
-e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_bitfile.cpp(112): warning C4244: “return”: 从“uint64_t”转换到“uint8_t”，可能丢失数据
-e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_bitfile.cpp(430): warning C4800: “int”: 将值强制为布尔值“true”或“false”(性能警告)
-e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_bitfile.cpp(441): warning C4800: “int”: 将值强制为布尔值“true”或“false”(性能警告)
-  testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.exe
+﻿  testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.exe
   testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.pdb (Partial PDB)
