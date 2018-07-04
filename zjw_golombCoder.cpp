@@ -25,13 +25,14 @@ void  GolombCoder::encode(uint64_t num)
 	rice_golombEncode(num);
 }
 
-void GolombCoder::decode(uint64_t & num)
+bool GolombCoder::decode(uint64_t & num)
 {
-	num = rice_golombDecode();
+	return rice_golombDecode(num);
 }
 
 void GolombCoder::rice_golombEncode(uint64_t num)
 {
+	
 	//右移，相当于 q = num/ (x^k)
 	uint64_t q = num >> k;
 	//相当于 r = num - q * (x^k)
@@ -43,7 +44,8 @@ void GolombCoder::rice_golombEncode(uint64_t num)
 	//不会判断缓存是否为满，直接向里面放，不足的话缓存到bit buffer中
 	bitWriteFile->putBit(1, (int)q);
 	bitWriteFile->putBit(0);
-
+	
+	//余数是反着来存的。
 	for (int i = 0; i < k; i++)
 	{
 		//判断r的最低一位，如果是1，那么putBit true,如果是0 ,那么putBit false;
@@ -77,8 +79,11 @@ void GolombCoder::exp_golombEncode(uint64_t num)
 	}
 }
 
-uint64_t GolombCoder::rice_golombDecode()
+ bool GolombCoder::rice_golombDecode(uint64_t & num)
 {
+	if (bitReadFile->checkTerminator())
+		return false;
+
 	bool b;
 	uint64_t unary = 0;
 	bitReadFile->getBit(b);
@@ -90,15 +95,17 @@ uint64_t GolombCoder::rice_golombDecode()
 
 	std::bitset<64> bits;
 	bits.reset();
+
+	//余数是先存低位的，所以解析出来也是从低位开始解析
 	for (int i = 0; i < k; i++)
 	{
 		bitReadFile->getBit(b);
 		bits.set(i, b);
 	}
 
-	uint64_t num = unary * m + bits.to_ulong();
+	num = unary * m + bits.to_ulong();
 
-	return num;
+	return true;
 }
 
 uint64_t GolombCoder::exp_golombDecode()

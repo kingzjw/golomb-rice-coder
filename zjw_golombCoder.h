@@ -33,8 +33,8 @@ public:
 	//对num进行Golomb Rice的编码
 	void encode(uint64_t num);
 
-	//解析出来的返回值：num
-	void decode(uint64_t& num);
+	//解析出来的返回值：num,返回false表示以及解析到文件末尾。
+	bool decode(uint64_t& num);
 
 private:
 
@@ -45,9 +45,10 @@ private:
 	//Exp Golomb
 	void exp_golombEncode(uint64_t num);
 
-	//返回的是解析出来的值
+	//返回的是false以及解析结束了。num是解析出来的值。
 	//use it must call  open close func in class bitWriteFile .
-	uint64_t rice_golombDecode();
+	bool rice_golombDecode(uint64_t & num);
+
 	//Exp Golomb
 	uint64_t exp_golombDecode();
 };

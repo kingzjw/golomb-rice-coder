@@ -12,7 +12,8 @@
 *		1. open must be called
 *		2. putBit() 
 *		3. close must be called
-*	
+* 限制：
+*	假定：Golomb编码后码元的最大长度为64位。结束符：64位0，也就是8个Byte 0 
 */
 
 #pragma once
@@ -59,6 +60,9 @@ public:
 
     //返回false表示，没有拿到bit.功能：从bit buffer 中取出的一个bit，当bitbuffer不够的时候，自动从byte buffer中取新的数据
     bool getBit(bool &bit);
+	
+	//检查是否到结尾了。到结尾的话，返回true,否则返回false;
+	bool checkTerminator();
 
 private:
 	//从bytebuffer中只拿一个byte，返回值如果是false说明，文件中数据不够了。
@@ -69,6 +73,9 @@ private:
 	
 	//当byteBuffer中都用过的时候，需要重新从文件读取内容。返回的是得到的有效byte的数量
 	uint64_t getBytesFromFile();
+
+	//把byteBuffer补满，返回的是得到的有效byte的数量
+	uint64_t getSomeBytesFromFile();
 
 };
 
@@ -105,6 +112,7 @@ private:
     // 向bitset中写入一个byte
     void putBytesBufferToFile();
 
+
 public:
 	// 构造函数
 	WriteBuffer(ofstream *filePtr);
@@ -119,6 +127,9 @@ public:
 
 	//结束之前必须调用这个函数
 	void fillout();
+
+	//在编码结束之后写入4个终结符。64bits的0。
+	void putTerminator();
 };
 
 
@@ -142,6 +153,7 @@ public:
 	bool open(string filePath);
 	bool open();
 	void close();
+	bool checkTerminator();
 
 	//返回值是：是否得到一个bit,如果false 表示到了文件末尾。参数是返回值
 	bool getBit(bool & b_out);
@@ -165,7 +177,6 @@ public:
 	bool open(string filePath);
 	bool open();
 	void close();
-
 	//写人一个Bit
 	void putBit(bool b_in);
 	void putBit(int b_in);

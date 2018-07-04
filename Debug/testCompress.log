@@ -1,4 +1,2 @@
-﻿  main.cpp
-e:\1.study\pointcloud\code\pcscompress\testcompress\main.cpp(14): warning C4101: “buffer”: 未引用的局部变量
-  testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.exe
+﻿  testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.exe
   testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.pdb (Partial PDB)

@@ -1,6 +1,7 @@
 #include "zjw_bitFile.h"
 
 //=====================ReadBuffer=======================
+
 ReadBuffer::ReadBuffer(ifstream * filePtr)
 {
 	assert(filePtr);
@@ -52,6 +53,67 @@ bool ReadBuffer::getBit(bool &bit)
 			return false;
 		}
 	}
+}
+
+bool ReadBuffer::checkTerminator()
+{
+	//终结符 连续64个0
+	int count = 0;
+	
+	int temp = bitPos;
+	while (temp < validBitsNum && count < 64)
+	{
+		if (bitBuffer[temp])
+		{
+			//不是终结符
+			return false;
+		}
+		temp++;
+		count++;
+	} 
+
+	int needCheckByte = (64 - count) / 8;
+	if (((64 - count) % 8) != 0)
+	{
+		needCheckByte++;
+	}
+	
+	if ((validByteNum - bytePos) < needCheckByte)
+	{
+		//bytebuffer中的数据不足够用于检查
+		//从file中读取byte重新补满bytebuffer，更新pos等数据
+		getSomeBytesFromFile();
+	}
+
+	//需要到byteBuffer中去检查
+	temp = bytePos;
+
+	while ((64 - count) >= 8)
+	{
+		if ((int)(byteBuffer[temp]))
+		{
+			//不是终结符
+			return false;
+		}
+		count += 8;
+		temp++;
+	}
+
+	//只剩下不足8位的需要进行判断,而且ByteBuffer已经读用了
+	while (count < 64)
+	{
+		uint8_t byte = byteBuffer[temp];
+		//比较个位
+		if (byte & 0x01)
+		{
+			return false;
+		}
+		//右移一位
+		byte >> 1;
+		count++;
+	}
+
+	return true;
 }
 
 bool ReadBuffer::getByteFromByteBuffer(uint8_t & byte) {
@@ -133,9 +195,32 @@ uint64_t ReadBuffer::getBytesFromFile()
 	return validByteNum;
 }
 
+uint64_t ReadBuffer::getSomeBytesFromFile()
+{
+	//现在还有效的数据,移动到ByteBuffer的最前面
+	int validNum = validByteNum - bytePos;
 
-//=====================writeBuffer=======================
+	for (int i = 0; i < validNum; i++)
+	{
+		byteBuffer[i] = byteBuffer[bytePos + i];
+	}
 
+	//读取ByteNum
+	if(validByteNum!=0)
+		filePtr->read((char*)(byteBuffer + validNum), bytePos);
+	else
+		filePtr->read((char*)(byteBuffer + validNum), byteBufferLength);
+	
+	//判断出实际得到的byte的数量。
+	validByteNum = filePtr->gcount() + validNum;
+	//初始化其他从参数
+	bytePos = 0;
+
+	return validByteNum;
+}
+
+
+//===================== writeBuffer =======================
 
 WriteBuffer::WriteBuffer(ofstream * filePtr)
 {
@@ -160,9 +245,9 @@ WriteBuffer::WriteBuffer(ofstream * filePtr)
 
 WriteBuffer::~WriteBuffer()
 {
-	delete filePtr;
+	//delete filePtr;
+	delete byteBuffer;
 }
-
 
 void WriteBuffer::putBit(bool b)
 {
@@ -261,6 +346,14 @@ void WriteBuffer::putBytesBufferToFile()
 	validByteNum = 0;
 }
 
+void WriteBuffer::putTerminator()
+{
+	for (int i = 0; i < 64; i++)
+	{
+		putBit(0);
+	}
+}
+
 void WriteBuffer::fillout()
 {
 	//-------bit buffer都到byte buffer------
@@ -278,8 +371,6 @@ void WriteBuffer::fillout()
 	//-------bytebuffer  都到 file-------
 	putBytesBufferToFile();
 }
-
-
 
 //==================bitfile=====================
 
@@ -332,7 +423,13 @@ bool BitReadFile::open()
 
 void BitReadFile::close()
 {
+	
 	file.close();
+}
+
+bool BitReadFile::checkTerminator()
+{
+	return readBuffer->checkTerminator();
 }
 
 bool BitReadFile::getBit(bool & b_out)
@@ -422,10 +519,15 @@ bool BitWriteFile::open()
 
 void BitWriteFile::close()
 {
+	//写入结束符
+	writeBuffer->putTerminator();
+
 	writeBuffer->fillout();
 	//writeBuffer.fillout();
 	file.close();
 }
+
+
 
 void BitWriteFile::putBit(bool b_in)
 {
