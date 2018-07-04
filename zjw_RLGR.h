@@ -72,7 +72,7 @@ public:
 	void encode();
 
 	//RLGR½âÂë
-	bool decode(uint64_t& num);
+	bool decode();
 
 	void setK(uint64_t k_);
 

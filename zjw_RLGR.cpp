@@ -43,6 +43,7 @@ void RLGR::initParam()
 
 void RLGR::encode()
 {
+	initParam();
 	//open
 	bitWriteFile->open();
 
@@ -119,9 +120,48 @@ void RLGR::encode()
 	bitWriteFile->close();
 }
 
-bool RLGR::decode(uint64_t & num)
+bool RLGR::decode()
 {
-	return rice_golombDecode(num);
+	initParam();
+	bitReadFile->open();
+
+	if (k = 0)
+	{
+		//该函数里面里面会更新p
+		rice_golombDecode(u);
+		//saveData
+		resData.push_back(u);
+
+		//根据这个decodeNum也要更新原有那个 kR和k的update
+		updateKR();
+		//u = decodeNum;
+		updateK();
+	}
+	else if(k>0)
+	{
+		//run model 
+		if (u == 0)
+		{
+			//add somethin
+		}
+		else if (u > 0)
+		{
+			// run model 下面遇到单个非0的数字，前面没有0的
+			rice_golombEncode(u);
+			//saveData
+			resData.push_back(u);
+
+			updateKR();
+			updateK();
+		}
+	}
+	else
+	{
+		assert(0);
+	}
+
+
+	bitReadFile->close();
 }
 
 void RLGR::setK(uint64_t k_)
@@ -267,8 +307,11 @@ bool RLGR::rice_golombDecode(uint64_t & num)
 		bitReadFile->getBit(b);
 		bits.set(i, b);
 	}
-
 	num = unary * m + bits.to_ulong();
+
+	//save to p for update
+	p = unary;
+
 
 	return true;
 }
