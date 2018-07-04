@@ -349,8 +349,8 @@ BitWriteFile::BitWriteFile(string path)
 BitWriteFile::~BitWriteFile()
 {
 	//delete path;
-	/*if(writeBuffer)
-		delete writeBuffer;*/
+	if(writeBuffer)
+		delete writeBuffer;
 }
 
 bool BitWriteFile::isOpen()
