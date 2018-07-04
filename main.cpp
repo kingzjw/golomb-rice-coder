@@ -9,8 +9,8 @@ using namespace std;
 
 int main()
 {
-	int length = 10000;
-	int max = 20;
+	int length = 50000;
+	int max = 200;
 	uint8_t buffer[1024];
 	int k = 2;
 
@@ -59,7 +59,7 @@ int main()
 	// decoder version 1
 	//
 	//////////////////////////////////////////////////////
-	/*coder.bitReadFile->open();
+	coder.bitReadFile->open();
 
 	ofstream of;
 	of.open("decode.txt");
@@ -72,14 +72,14 @@ int main()
 		of << res << endl;
 	}
 	of.close();
-	coder.bitReadFile->close();*/
+	coder.bitReadFile->close();
 
 	///////////////////////////////////////////////////////
 	//
 	// decoder version 2
 	//
 	//////////////////////////////////////////////////////
-	coder.bitReadFile->open();
+	/*coder.bitReadFile->open();
 
 	ofstream of;
 	of.open("decode.txt");
@@ -91,7 +91,7 @@ int main()
 		of << res << endl;
 	
 	of.close();
-	coder.bitReadFile->close();
+	coder.bitReadFile->close();*/
 
 
 	return 0;

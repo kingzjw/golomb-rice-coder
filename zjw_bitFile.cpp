@@ -520,7 +520,7 @@ bool BitWriteFile::open()
 void BitWriteFile::close()
 {
 	//Ð´Èë½áÊø·û
-	writeBuffer->putTerminator();
+	//writeBuffer->putTerminator();
 
 	writeBuffer->fillout();
 	//writeBuffer.fillout();

@@ -74,7 +74,7 @@ private:
 	//当byteBuffer中都用过的时候，需要重新从文件读取内容。返回的是得到的有效byte的数量
 	uint64_t getBytesFromFile();
 
-	//把byteBuffer补满，返回的是得到的有效byte的数量
+	//用于checkTerminator中，把byteBuffer补满，返回的是得到的有效byte的数量
 	uint64_t getSomeBytesFromFile();
 
 };

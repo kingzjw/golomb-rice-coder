@@ -81,8 +81,8 @@ void GolombCoder::exp_golombEncode(uint64_t num)
 
  bool GolombCoder::rice_golombDecode(uint64_t & num)
 {
-	if (bitReadFile->checkTerminator())
-		return false;
+	/*if (bitReadFile->checkTerminator())
+		return false;*/
 
 	bool b;
 	uint64_t unary = 0;
