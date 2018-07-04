@@ -30,6 +30,12 @@ bool GolombCoder::decode(uint64_t & num)
 	return rice_golombDecode(num);
 }
 
+void GolombCoder::setK(uint64_t k_)
+{
+	k = k_;
+	m = pow(2, k);
+}
+
 void GolombCoder::rice_golombEncode(uint64_t num)
 {
 	

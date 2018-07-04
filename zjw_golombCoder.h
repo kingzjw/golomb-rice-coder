@@ -36,6 +36,8 @@ public:
 	//解析出来的返回值：num,返回false表示以及解析到文件末尾。
 	bool decode(uint64_t& num);
 
+	void setK(uint64_t k_);
+
 private:
 
 	//利用Golomb Rice 对 num进行编码，返回值是编码后的码元长度。
