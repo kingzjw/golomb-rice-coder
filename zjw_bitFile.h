@@ -26,7 +26,7 @@ using namespace std;
 
 //bitBufferLength 一定要是8的倍数
 static const int bitBufferLength = 8; 
-static const int byteBufferLength = 516; 
+static const int byteBufferLength = 512; 
 
 //BitBuffer 是一个字节的容量。
 class ReadBuffer

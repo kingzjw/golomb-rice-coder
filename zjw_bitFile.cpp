@@ -29,7 +29,7 @@ ReadBuffer::~ReadBuffer()
 
 bool ReadBuffer::getBit(bool &bit)
 {
-	if (bitPos < validByteNum)
+	if (bitPos < validBitsNum)
 	{
 		bit = bitBuffer[bitPos];
 		bitPos++;
@@ -124,7 +124,7 @@ uint64_t ReadBuffer::getBytesFromFile()
 	validByteNum = filePtr->gcount();
 
 	//初始化其他从参数
-	bytePos = 0;
+ 	bytePos = 0;
 
 	//test
 	cout << "getBytesFromFile: read number " << validByteNum << endl;
@@ -174,6 +174,11 @@ void WriteBuffer::putBit(bool b)
 	{
 		//bitBuffer 写入到 bytebuffer
 		putBitsToByteBuffer();
+
+		//save b
+		bitBuffer[bitPos] = b;
+		bitPos++;
+		validBitsNum++;
 	}
 
 }

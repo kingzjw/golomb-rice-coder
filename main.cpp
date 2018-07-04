@@ -39,12 +39,22 @@ int main()
 	GolombCoder coder= GolombCoder(k);
 	
 	coder.bitWriteFile->open();
-	coder.encode(18);
+
+	for (int i = 0; i < 1000; i++)
+	{
+		coder.encode(18);
+	}
 
 	coder.bitWriteFile->close();
 
 	coder.bitReadFile->open();
 	uint64_t res = 0;
+	coder.decode(res);
+	cout << "res:" << res << endl;
+	coder.decode(res);
+	cout << "res:" << res << endl;
+	coder.decode(res);
+	cout << "res:" << res << endl;
 	coder.decode(res);
 	cout << "res:" << res << endl;
 	coder.bitReadFile->close();
