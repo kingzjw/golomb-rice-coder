@@ -9,11 +9,12 @@ using namespace std;
 
 int main()
 {
-	int length = 50000;
-	int max = 200;
-	uint8_t buffer[1024];
-	int k = 2;
+	int max = 2000;
+	//十万
+	//int length = 100000;
 
+	int length = 100000;
+	int k = 8;
 	
 	///////////////////////////////////////////////////////
 	//
@@ -34,6 +35,27 @@ int main()
 		codeOfs << nums[n] << endl;
 	}
 	codeOfs.close();
+
+	///////////////////////////////////////////////////////
+	//
+	// 从文件读取生成测试数据
+	//
+	//////////////////////////////////////////////////////
+
+	//uint64_t表示的是 unsigned long long。
+	//uint64_t *nums = new uint64_t[length];
+
+	//ofstream codeOfs;
+	//codeOfs.open("code.txt");
+	////random number generator
+	//std::random_device rd;
+	//for (int n = 0; n < length; ++n)
+	//{
+	//	nums[n] = rd() % max;
+	//	codeOfs << nums[n] << endl;
+	//}
+	//codeOfs.close();
+
 
 
 	///////////////////////////////////////////////////////
