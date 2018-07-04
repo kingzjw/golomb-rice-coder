@@ -190,7 +190,7 @@ uint64_t ReadBuffer::getBytesFromFile()
  	bytePos = 0;
 
 	//test
-	cout << "getBytesFromFile: read number " << validByteNum << endl;
+	//cout << "getBytesFromFile: read number " << validByteNum << endl;
 	//end test
 	return validByteNum;
 }
@@ -463,9 +463,9 @@ bool BitWriteFile::open(string filePath)
 		cout << "BitWriteFile open file: " << filePath << " failed !!!" << endl;
 		cout << "create new file : " << filePath << " !!!" << endl;
 		//ios::app加上后，如果不存在文件，那么会创建文件。
-		file.open(filePath, ios::binary | ios::out | ios::app);
+		file.open(filePath, ios::binary| ios::app);
 		file.close();
-		file.open(filePath, ios::binary | ios::out);
+		file.open(filePath, ios::binary);
 		if (file)
 		{
 			cout << "BitWriteFile open file: " << filePath << "success." << endl;
@@ -488,15 +488,15 @@ bool BitWriteFile::open(string filePath)
 
 bool BitWriteFile::open()
 {
-	file.open(path, ios::binary||ios::in);
+	file.open(path, ios::binary);
 	if (!file)
 	{
 		cout << "BitReadFile open file: " << path << " failed !!!" << endl;
 		cout << "create new file : " << path << " !!!" << endl;
 		//ios::app加上后，如果不存在文件，那么会创建文件。
-		file.open(path, ios::binary | ios::out | ios::app);
+		file.open(path, ios::binary |ios::app);
 		file.close();
-		file.open(path, ios::binary | ios::out);
+		file.open(path, ios::binary );
 		if (file)
 		{
 			cout << "BitReadFile open file: " << path << "success." << endl;
