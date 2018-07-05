@@ -79,6 +79,9 @@ void RLGR::encode()
 					//encode 为0
 					encodeOneZero();
 
+					//更新K的时候不同模式
+					type = CompleteRun;
+
 					//update
 					updateKR();
 					updateK();
@@ -91,6 +94,10 @@ void RLGR::encode()
 					assert(u);
 					//数字的连续为uIsZero个0000000 加上一个u，编码为0
 					encodeStringWithZeros(uIsZero, u);
+					
+					//更新K的时候不同模式
+					type = PartialRun;
+
 					updateKR();
 					updateK();
 				}
@@ -105,7 +112,14 @@ void RLGR::encode()
 			else if (u > 0)
 			{
 				// run model 下面遇到单个非0的数字，前面没有0的
-				rice_golombEncode(u);
+				//rice_golombEncode(u);
+				
+				//当作 前面是0个0，
+				encodeStringWithZeros(0, u);
+				
+				//更新K的时候不同模式
+				type = PartialRun;
+
 				updateKR();
 				updateK();
 			}
@@ -139,19 +153,51 @@ bool RLGR::decode()
 	}
 	else if(k>0)
 	{
-		//run model 
-		if (u == 0)
+		//add something
+		//拿到下一个bit进行判断，如果是0那么，就是m个0，否则就是000000u的形式
+		if (nextBitIsZero)
 		{
-			//add somethin
-		}
-		else if (u > 0)
-		{
-			// run model 下面遇到单个非0的数字，前面没有0的
-			rice_golombEncode(u);
-			//saveData
-			resData.push_back(u);
+			u = 0;
+			//根据上一次更新后的m来恢复出 m个0
+			for (int i = 0; i < m; i++)
+			{
+				resData.push_back(u);
+			}
 
+			//根据这个decodeNum也要更新原有那个 kR和k的update
 			updateKR();
+			//u = decodeNum;
+			updateK();
+		}
+		else
+		{
+			//数字串 000000u  或者是 没有0，只有非0的u的形式
+
+			//得到0的个数,并保存
+			uint64_t zeroNum = 0;
+			bitset<64> bits;
+			bits.reset();
+
+			bool b;
+			for (int i = 0; i < k; i++)
+			{
+				bitReadFile->getBit(b);
+				bits.set(i, b);
+			}
+			zeroNum = bits.to_ulong();
+			u = 0;
+			for (int i = 0; i < zeroNum; i++)
+			{
+				resData.push_back(u);
+			}
+
+			//处理后面那个不是0的数字
+			rice_golombDecode(u);
+			u++;
+
+			//根据这个decodeNum也要更新原有那个 kR和k的update
+			updateKR();
+			//u = decodeNum;
 			updateK();
 		}
 	}
@@ -170,13 +216,23 @@ void RLGR::setK(uint64_t k_)
 	m = pow(2, k);
 }
 
+bool RLGR::nextBitIsZero()
+{
+	bool  b_out;
+	if (!bitReadFile->getBit(b_out))
+	{
+		cout << "file 中没有数据了" << endl;
+	}
+	return !b_out;
+}
+
 void RLGR::updateKR()
 {
 	if (p == 0)
 	{
 		kRP = kRP - 2;
 		kR = kRP >> ((int)log2(L));
-		m = pow(2, kR);
+		//m = pow(2, kR);
 	}
 	else if (p == 1)
 	{
@@ -186,7 +242,7 @@ void RLGR::updateKR()
 	{
 		kRP = kRP +p+1;
 		kR = kRP >> ((int)log2(L));
-		m = pow(2, kR);
+		//m = pow(2, kR);
 	}
 	else
 	{
@@ -203,11 +259,13 @@ void RLGR::updateK()
 		{
 			kP = kP + u0;
 			k = kP >> ((int)log2(L));
+			m = pow(2, k);
 		}
 		else if (u > 0)
 		{
 			kP = kP - d0;
 			k = kP >> ((int)log2(L));
+			m = pow(2, k);
 		}
 		else
 		{
@@ -224,10 +282,12 @@ void RLGR::updateK()
 		case CompleteRun:
 			kP = kP + u1;
 			k = kP >> ((int)log2(L));
+			m = pow(2, k);
 			break;
 		case PartialRun:
 			kP = kP - d1;
 			k = kP >> ((int)log2(L));
+			m = pow(2, k);
 			break;
 		default:
 			assert(0);
@@ -245,7 +305,7 @@ bool RLGR::rice_golombEncode(uint64_t num)
 	//右移，相当于 q = num/ (x^k)
 	p = num >> kR;
 	//相当于 r = num - q * (x^k)
-	uint64_t r = num & (m - 1);
+	uint64_t r = num & ((int)pow(2,kR) - 1);
 
 	// 编码后码元的长度
 	auto len = p + 1 + kR;
@@ -307,11 +367,10 @@ bool RLGR::rice_golombDecode(uint64_t & num)
 		bitReadFile->getBit(b);
 		bits.set(i, b);
 	}
-	num = unary * m + bits.to_ulong();
+	num = unary * pow(2, kR) + bits.to_ulong();
 
 	//save to p for update
 	p = unary;
-
-
+	
 	return true;
 }

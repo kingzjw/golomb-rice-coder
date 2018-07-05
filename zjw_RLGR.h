@@ -77,6 +77,10 @@ public:
 	void setK(uint64_t k_);
 
 private:
+	
+	//判断下一个bit是不是zero.是0返回true,否则是false
+	bool nextBitIsZero();
+
 	//每一次GR编码之后，p有更新了，然后更新这个。根据p来更新kR。
 	void updateKR();
 
