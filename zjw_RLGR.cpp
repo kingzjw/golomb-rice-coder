@@ -4,7 +4,10 @@
 RLGR::RLGR(vector<uint64_t> &codeData, vector<uint64_t> &resData, RunType type,std::string fileName)
 {
 	initParam();
-	
+
+	this->codeData = codeData;
+	this->resData = resData;
+
 	this->type = type;
 	this->fileName = fileName;
 	bitReadFile = new BitReadFile(fileName);
@@ -21,6 +24,8 @@ RLGR::~RLGR()
 
 void RLGR::initParam()
 {
+	resData.clear();
+
 	//判断是否run length的k
 	k = 0;
 
@@ -51,7 +56,7 @@ void RLGR::encode()
 	for (int num_it = 0; num_it < codeData.size(); num_it++)
 	{
 		u = codeData[num_it];
-		if (k = 0)
+		if (k == 0)
 		{
 			//no run model  GR的方式code.
 			rice_golombEncode(u);
@@ -138,76 +143,86 @@ bool RLGR::decode()
 {
 	initParam();
 	bitReadFile->open();
-
-	if (k = 0)
+	while (resData.size() < codeData.size())
 	{
-		//该函数里面里面会更新p
-		rice_golombDecode(u);
-		//saveData
-		resData.push_back(u);
-
-		//根据这个decodeNum也要更新原有那个 kR和k的update
-		updateKR();
-		//u = decodeNum;
-		updateK();
-	}
-	else if(k>0)
-	{
-		//add something
-		//拿到下一个bit进行判断，如果是0那么，就是m个0，否则就是000000u的形式
-		if (nextBitIsZero)
+		if (k == 0)
 		{
-			u = 0;
-			//根据上一次更新后的m来恢复出 m个0
-			for (int i = 0; i < m; i++)
-			{
-				resData.push_back(u);
-			}
+			//该函数里面里面会更新p
+			rice_golombDecode(u);
+			//saveData
+			resData.push_back(u);
 
 			//根据这个decodeNum也要更新原有那个 kR和k的update
 			updateKR();
 			//u = decodeNum;
 			updateK();
+		}
+		else if(k>0)
+		{
+			//add something
+			//拿到下一个bit进行判断，如果是0那么，就是m个0，否则就是000000u的形式
+			if (nextBitIsZero())
+			{
+				u = 0;
+				//根据上一次更新后的m来恢复出 m个0
+				for (int i = 0; i < m; i++)
+				{
+					resData.push_back(u);
+				}
+				
+				//更新K的时候不同模式
+				type = CompleteRun;
+
+				//根据这个decodeNum也要更新原有那个 kR和k的update
+				updateKR();
+				//u = decodeNum;
+				updateK();
+			}
+			else
+			{
+				//数字串 000000u  或者是 没有0，只有非0的u的形式
+
+				//得到0的个数,并保存
+				uint64_t zeroNum = 0;
+				bitset<64> bits;
+				bits.reset();
+
+				bool b;
+				for (int i = 0; i < k; i++)
+				{
+					bitReadFile->getBit(b);
+					bits.set(i, b);
+				}
+				zeroNum = bits.to_ulong();
+				u = 0;
+				for (int i = 0; i < zeroNum; i++)
+				{
+					resData.push_back(u);
+				}
+
+				//处理后面那个不是0的数字
+				rice_golombDecode(u);
+				u++;
+				resData.push_back(u);
+
+				//更新K的时候不同模式
+				type = PartialRun;
+
+				//根据这个decodeNum也要更新原有那个 kR和k的update
+				updateKR();
+				//u = decodeNum;
+				updateK();
+			}
 		}
 		else
 		{
-			//数字串 000000u  或者是 没有0，只有非0的u的形式
-
-			//得到0的个数,并保存
-			uint64_t zeroNum = 0;
-			bitset<64> bits;
-			bits.reset();
-
-			bool b;
-			for (int i = 0; i < k; i++)
-			{
-				bitReadFile->getBit(b);
-				bits.set(i, b);
-			}
-			zeroNum = bits.to_ulong();
-			u = 0;
-			for (int i = 0; i < zeroNum; i++)
-			{
-				resData.push_back(u);
-			}
-
-			//处理后面那个不是0的数字
-			rice_golombDecode(u);
-			u++;
-
-			//根据这个decodeNum也要更新原有那个 kR和k的update
-			updateKR();
-			//u = decodeNum;
-			updateK();
+			assert(0);
 		}
-	}
-	else
-	{
-		assert(0);
 	}
 
 
 	bitReadFile->close();
+	return true;
 }
 
 void RLGR::setK(uint64_t k_)
@@ -312,6 +327,7 @@ bool RLGR::rice_golombEncode(uint64_t num)
 
 	//不会判断缓存是否为满，直接向里面放，不足的话缓存到bit buffer中
 	bitWriteFile->putBit(1, (int)p);
+
 	bitWriteFile->putBit(0);
 
 	//余数是反着来存的。
@@ -339,7 +355,7 @@ bool RLGR::encodeStringWithZeros(int zeroNum ,uint64_t &u)
 	for (int i = 0; i < k; i++)
 	{
 		bitWriteFile->putBit(zeroNum & 0x01);
-		zeroNum >> 1;
+		zeroNum >>= 1;
 	}
 
 	rice_golombEncode(u - 1);
@@ -362,7 +378,7 @@ bool RLGR::rice_golombDecode(uint64_t & num)
 	bits.reset();
 
 	//余数是先存低位的，所以解析出来也是从低位开始解析
-	for (int i = 0; i < k; i++)
+	for (int i = 0; i < kR; i++)
 	{
 		bitReadFile->getBit(b);
 		bits.set(i, b);

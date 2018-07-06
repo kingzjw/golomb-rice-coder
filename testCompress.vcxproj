@@ -113,10 +113,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="zjw_bitFile.cpp" />
     <ClCompile Include="zjw_golombCoder.cpp" />
+    <ClCompile Include="zjw_RLGR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zjw_bitFile.h" />
     <ClInclude Include="zjw_golombCoder.h" />
+    <ClInclude Include="zjw_RLGR.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="code.txt" />

@@ -77,9 +77,6 @@ public:
 	void setK(uint64_t k_);
 
 private:
-	
-	//判断下一个bit是不是zero.是0返回true,否则是false
-	bool nextBitIsZero();
 
 	//每一次GR编码之后，p有更新了，然后更新这个。根据p来更新kR。
 	void updateKR();
@@ -101,4 +98,7 @@ private:
 	//返回的是false以及解析结束了。num是解析出来的值。
 	//use it must call  open close func in class bitWriteFile .
 	bool rice_golombDecode(uint64_t & num);
+
+	//判断下一个bit是不是zero.是0返回true,否则是false
+	bool nextBitIsZero();
 };

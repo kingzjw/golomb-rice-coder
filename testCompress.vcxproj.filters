@@ -24,12 +24,18 @@
     <ClCompile Include="zjw_golombCoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="zjw_RLGR.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zjw_bitFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="zjw_golombCoder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="zjw_RLGR.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,3 +1,11 @@
-﻿  main.cpp
+﻿  zjw_RLGR.cpp
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(39): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(56): warning C4018: “<”: 有符号/无符号不匹配
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(231): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(277): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(283): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(300): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(305): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
+e:\1.study\pointcloud\code\pcscompress\testcompress\zjw_rlgr.cpp(386): warning C4244: “=”: 从“double”转换到“uint64_t”，可能丢失数据
   testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.exe
   testCompress.vcxproj -> E:\1.study\pointCloud\code\pcsCompress\Debug\testCompress.pdb (Partial PDB)
