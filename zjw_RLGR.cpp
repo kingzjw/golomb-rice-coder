@@ -49,16 +49,35 @@ void RLGR::initParam()
 
 void RLGR::encode()
 {
-	initParam();
 	//open
 	bitWriteFile->open();
-	
+
 	//多在数据末尾放入一个非0的符号，便于处理文件末尾的多个0的情况。
 	codeData->push_back(10);
+	
+#define COMPRESS_NUM_TO_FILE
+#ifdef COMPRESS_NUM_TO_FILE
+	//把数据的个数利用GR coder压缩到文件的第一个数据。
+	uint64_t totalNum = codeData->size();
+	//设置GR coder中的k,这是解压和压缩两边约定好的。要改就只能一起改了。
+	kR = 10;
+	rice_golombEncode(totalNum);
+	cout << "start to encode the data ( num: " << totalNum - 1 << " )" << endl;
+#endif
+
+	//kR等值会初始化
+	initParam();
 
 	//对每一个数字进行编码
 	for (int num_it = 0; num_it < codeData->size(); num_it++)
 	{
+		//test
+		if (num_it == 302)
+			int asdfa = 1234;
+
+		cout << "num: " << num_it << endl;
+		//end test
+
 		u = (*codeData)[num_it];
 		if (k == 0)
 		{
@@ -163,16 +182,33 @@ void RLGR::encode()
 			assert(0);
 		}
 	}
-
+	//删除文件结束符号
+	codeData->erase(codeData->begin() + codeData->size() - 1);
 	//关闭
+	cout << "finish  encode the data !!!"<< endl;
 	bitWriteFile->close();
+
+
 }
 
 bool RLGR::decode()
 {
-	initParam();
+
 	bitReadFile->open();
-	while (resData->size() < codeData->size())
+
+#define COMPRESS_NUM_TO_FILE
+#ifdef COMPRESS_NUM_TO_FILE
+	//设置GR coder中的k,这是解压和压缩两边约定好的。要改就只能一起改了。
+	kR = 10;
+	//得到后面还有多少个数据(GR coder中的decoder),包括文件结束符。
+	uint64_t totalNum =0;
+	rice_golombDecode(totalNum);
+	cout << "start parse the coded file (num: " << totalNum-1 << ")" << endl;
+#endif
+
+	//RLGR的参数化初始
+	initParam();
+	while (resData->size() < totalNum)
 	{
 		if (k == 0)
 		{
@@ -250,6 +286,7 @@ bool RLGR::decode()
 	}
 
 	resData->erase(resData->begin() + resData->size() - 1);
+	cout << "finish  decode the data !!!" << endl;
 	bitReadFile->close();
 	return true;
 }
@@ -274,6 +311,13 @@ void RLGR::updateKR()
 {
 	if (p == 0)
 	{
+		//assert(kRP >1 );
+		if (kRP < 2)
+		{
+			kRP += 10;
+			cout << "updateKR : kRP are going to be negative,so add 10 toit self !" << endl;
+		}
+
 		kRP = kRP - 2;
 		kR = kRP >> ((int)log2(L));
 		//m = pow(2, kR);
@@ -307,6 +351,13 @@ void RLGR::updateK()
 		}
 		else if (u > 0)
 		{
+			//assert(kP >0);
+			if (kP < 1)
+			{
+				kP += 10;
+				cout << "updateK: kP are going to be negative,so add 10 toit self !" << endl;
+			}
+
 			kP = kP - d0;
 			k = kP >> ((int)log2(L));
 			m = pow(2, k);
@@ -329,6 +380,14 @@ void RLGR::updateK()
 			m = pow(2, k);
 			break;
 		case PartialRun:
+			//assert(kP >0 );
+			
+			if (kP < 1)
+			{
+				kP += 10;
+				cout << "updateK: kP are going to be negative,so add 10 toit self !" << endl;
+			}
+
 			kP = kP - d1;
 			k = kP >> ((int)log2(L));
 			m = pow(2, k);

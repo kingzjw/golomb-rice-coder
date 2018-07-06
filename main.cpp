@@ -9,15 +9,18 @@ int main()
 {
 	void GR_example();
 	void RLGR_example();
+	//测试数据
 	void RLGR_example2();
+	void RLGR_example3_readFromFile();
 
-	GR_example();
-	
+	RLGR_example3_readFromFile();
+
+	system("pause");
+	return 0;
 }
 
 void GR_example()
 {
-	int k = 8;
 
 	int max = 20;
 
@@ -58,6 +61,7 @@ void GR_example()
 	// encoder and decoder
 	//
 	//////////////////////////////////////////////////////
+	int k = 8;
 	GolombCoder coder = GolombCoder(&numsList, &resList,k);
 	coder.encode();
 	coder.decode();
@@ -68,7 +72,6 @@ void GR_example()
 	// save the decoder info to file
 	//
 	//////////////////////////////////////////////////////
-	assert(resList.size() == numsList.size());
 
 	ofstream of;
 	of.open("decode.txt");
@@ -112,6 +115,65 @@ void RLGR_example2()
 	}
 	system("pause");
 	return ;
+}
+
+void RLGR_example3_readFromFile()
+{
+	int max = 20;
+
+	int length = 1000;
+
+
+	//uint64_t表示的是 unsigned long long。
+	vector<uint64_t> numsList;
+	vector<uint64_t> resList;
+
+
+	///////////////////////////////////////////////////////
+	//
+	//  从文件中取得测试数据
+	//
+	//////////////////////////////////////////////////////
+
+	ifstream codeIfs;
+	codeIfs.open("code.txt");
+	//random number generator
+	std::random_device rd;
+	uint64_t temp;
+	for (int n = 0; n < length; ++n)
+	{
+		codeIfs >> temp;
+		numsList.push_back(temp);
+	}
+	codeIfs.close();
+
+
+	///////////////////////////////////////////////////////
+	//
+	// encoder and decoder
+	//
+	//////////////////////////////////////////////////////
+	RLGR rlgr = RLGR(&numsList, &resList);
+	rlgr.encode();
+	rlgr.decode();
+
+
+	///////////////////////////////////////////////////////
+	//
+	// save the decoder info to file
+	//
+	//////////////////////////////////////////////////////
+
+	ofstream of;
+	of.open("decode.txt");
+
+	for (int i = 0; i < resList.size(); i++)
+	{
+		of << resList[i] << endl;
+	}
+	of.close();
+
+	return;
 }
 
 void RLGR_example()
@@ -170,7 +232,6 @@ void RLGR_example()
 	// save the decoder info to file
 	//
 	//////////////////////////////////////////////////////
-	assert(resList.size() == numsList.size());
 
 	ofstream of;
 	of.open("decode.txt");

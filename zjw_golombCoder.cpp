@@ -27,13 +27,28 @@ void  GolombCoder::encode()
 {
 	bitWriteFile->open();
 
+#define COMPRESS_NUM_TO_FILE
+#ifdef COMPRESS_NUM_TO_FILE
+	//把数据的个数利用GR coder压缩到文件的第一个数据。
+	uint64_t totalNum = codeData->size();
+	//设置GR coder中的k,这是解压和压缩两边约定好的。要改就只能一起改了。
+	int temp = k;
+	k = 10;
+	m = pow(2, k);
+	rice_golombEncode(totalNum);
+	cout << "start to encode the data ( num: " << totalNum<< " )" << endl;
+#endif
+
+	//恢复默认的k
+	k = temp;
+	m = pow(2, k);
 	for (int i = 0; i < codeData->size(); i++)
 	{
 		rice_golombEncode((*codeData)[i]);
 	}
 
+	cout << "finish  encode the data !!!" << endl;
 	bitWriteFile->close();
-
 }
 
 bool GolombCoder::decode()
@@ -41,12 +56,29 @@ bool GolombCoder::decode()
 	resData->clear();
 	bitReadFile->open();
 
+#define COMPRESS_NUM_TO_FILE
+#ifdef COMPRESS_NUM_TO_FILE
+	//设置GR coder中的k,这是解压和压缩两边约定好的。要改就只能一起改了。
+	int t = k;
+	k = 10;
+	m = pow(2, k);
+
+	//得到后面还有多少个数据(GR coder中的decoder),包括文件结束符。
+	uint64_t totalNum = 0;
+	rice_golombDecode(totalNum);
+	cout << "start parse the coded file (num: " << totalNum << ")" << endl;
+#endif
+	//恢复默认的k值
+	k = t;
+	m = pow(2, k);
+
 	uint64_t temp;
-	for (int i = 0; i < codeData->size(); i++)
+	for (int i = 0; i < totalNum; i++)
 	{
 		rice_golombDecode(temp);
 		resData->push_back(temp);
 	}
+	cout << "finish  encode the data !!!" << endl;
 	bitReadFile->close();
 	return true;
 }

@@ -396,11 +396,11 @@ bool BitReadFile::open(string filePath)
 	file.open(filePath, ios::binary | ios::out);
 	if (!file)
 	{
-		cout << "BitReadFile open file: " << filePath << " failed !!!" << endl;
+		cout << "open BitReadFile file: " << filePath << " failed !!!" << endl;
 	}
 	else
 	{
-		cout << "BitReadFile open file: " << filePath << "success." << endl;
+		cout << "open BitReadFile file: " << filePath << "success." << endl;
 	}
 	readBuffer = new ReadBuffer(&file);
 	return true;
@@ -411,11 +411,11 @@ bool BitReadFile::open()
 	file.open(path, ios::binary| ios::out);
 	if (!file)
 	{
-		cout << "BitReadFile open file: " << path << " failed !!!" << endl;
+		cout << "open BitReadFile file: " << path << " failed !!!" << endl;
 	}
 	else
 	{
-		cout << "BitReadFile open file: " << path << "success." << endl;
+		cout << "open BitReadFile file: " << path << "success." << endl;
 	}
 	readBuffer = new ReadBuffer(&file);
 	return false;
@@ -423,7 +423,7 @@ bool BitReadFile::open()
 
 void BitReadFile::close()
 {
-	
+	cout << "close the BitReadFile file: " << path << "success." << endl;
 	file.close();
 }
 
@@ -491,7 +491,7 @@ bool BitWriteFile::open()
 	file.open(path, ios::binary);
 	if (!file)
 	{
-		cout << "BitReadFile open file: " << path << " failed !!!" << endl;
+		cout << "open BitWriteFile  file: " << path << " failed !!!" << endl;
 		cout << "create new file : " << path << " !!!" << endl;
 		//ios::app加上后，如果不存在文件，那么会创建文件。
 		file.open(path, ios::binary |ios::app);
@@ -499,7 +499,7 @@ bool BitWriteFile::open()
 		file.open(path, ios::binary );
 		if (file)
 		{
-			cout << "BitReadFile open file: " << path << "success." << endl;
+			cout << "open BitWriteFile  file: " << path << "success." << endl;
 		}
 		else
 		{
@@ -510,7 +510,7 @@ bool BitWriteFile::open()
 	}
 	else
 	{
-		cout << "BitReadFile open file: " << path << "success." << endl;
+		cout << "open BitWriteFile  file: " << path << "success." << endl;
 	}
 	writeBuffer = new WriteBuffer(&file);
 	//writeBuffer = WriteBuffer(&file);
@@ -521,6 +521,7 @@ void BitWriteFile::close()
 {
 	//写入结束符
 	//writeBuffer->putTerminator();
+	cout << "close the BitWriteFile file: " << path << "success." << endl;
 
 	writeBuffer->fillout();
 	//writeBuffer.fillout();
