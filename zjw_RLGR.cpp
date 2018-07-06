@@ -1,12 +1,13 @@
 #include "zjw_RLGR.h"
 
 
-RLGR::RLGR(vector<uint64_t> &codeData, vector<uint64_t> &resData, RunType type,std::string fileName)
+RLGR::RLGR(vector<uint64_t> *codeData, vector<uint64_t> * resData,std::string fileName)
 {
-	initParam();
 
 	this->codeData = codeData;
 	this->resData = resData;
+	
+	initParam();
 
 	this->type = type;
 	this->fileName = fileName;
@@ -24,7 +25,7 @@ RLGR::~RLGR()
 
 void RLGR::initParam()
 {
-	resData.clear();
+	resData->clear();
 
 	//判断是否run length的k
 	k = 0;
@@ -51,11 +52,14 @@ void RLGR::encode()
 	initParam();
 	//open
 	bitWriteFile->open();
+	
+	//多在数据末尾放入一个非0的符号，便于处理文件末尾的多个0的情况。
+	codeData->push_back(10);
 
 	//对每一个数字进行编码
-	for (int num_it = 0; num_it < codeData.size(); num_it++)
+	for (int num_it = 0; num_it < codeData->size(); num_it++)
 	{
-		u = codeData[num_it];
+		u = (*codeData)[num_it];
 		if (k == 0)
 		{
 			//no run model  GR的方式code.
@@ -65,15 +69,29 @@ void RLGR::encode()
 		}
 		else if (k > 0)
 		{
+			//bool fileEnd = false;
 			//run model 
-			if (u == 0)
+			if (u == 0)// && ++num_it < codeData->size())
 			{
-				u = codeData[++num_it];
+				//u等于0，后面还有数字
+
+				//还原num_it
+				/*num_it--;
+
+				if (++num_it >= codeData->size())
+				{
+					fileEnd = true;
+					num_it--;
+				}
+				*/
+
+
+				u = (*codeData)[++num_it];
 				int uIsZero = 1;
 				while (u == 0 && uIsZero < m)
 				{
 					uIsZero++;
-					u = codeData[++num_it];
+					u = (*codeData)[++num_it];
 				}
 
 				if (uIsZero == m)
@@ -93,13 +111,24 @@ void RLGR::encode()
 
 					continue;
 				}
-				else if(u != 0)
+
+				//else if (u == 0 && ++num_it > codeData->size())
+				//{
+				//	//u等于0，后面已经没有数字了。达到文件的末尾。那么按照Partion run来进行处理。
+				//	uIsZero = 0;
+				//	//数字的连续为uIsZero个0000000 加上一个u，编码为0
+				//	encodeStringWithZeros(uIsZero, u);
+				//	//更新K的时候不同模式
+				//	type = PartialRun;
+				//	updateKR();
+				//	updateK();
+				//}
+
+				else if (u != 0)
 				{
-					//u != 0
-					assert(u);
 					//数字的连续为uIsZero个0000000 加上一个u，编码为0
 					encodeStringWithZeros(uIsZero, u);
-					
+
 					//更新K的时候不同模式
 					type = PartialRun;
 
@@ -118,10 +147,10 @@ void RLGR::encode()
 			{
 				// run model 下面遇到单个非0的数字，前面没有0的
 				//rice_golombEncode(u);
-				
+
 				//当作 前面是0个0，
 				encodeStringWithZeros(0, u);
-				
+
 				//更新K的时候不同模式
 				type = PartialRun;
 
@@ -143,14 +172,14 @@ bool RLGR::decode()
 {
 	initParam();
 	bitReadFile->open();
-	while (resData.size() < codeData.size())
+	while (resData->size() < codeData->size())
 	{
 		if (k == 0)
 		{
 			//该函数里面里面会更新p
 			rice_golombDecode(u);
 			//saveData
-			resData.push_back(u);
+			resData->push_back(u);
 
 			//根据这个decodeNum也要更新原有那个 kR和k的update
 			updateKR();
@@ -167,7 +196,7 @@ bool RLGR::decode()
 				//根据上一次更新后的m来恢复出 m个0
 				for (int i = 0; i < m; i++)
 				{
-					resData.push_back(u);
+					resData->push_back(u);
 				}
 				
 				//更新K的时候不同模式
@@ -197,13 +226,13 @@ bool RLGR::decode()
 				u = 0;
 				for (int i = 0; i < zeroNum; i++)
 				{
-					resData.push_back(u);
+					resData->push_back(u);
 				}
 
 				//处理后面那个不是0的数字
 				rice_golombDecode(u);
 				u++;
-				resData.push_back(u);
+				resData->push_back(u);
 
 				//更新K的时候不同模式
 				type = PartialRun;
@@ -220,7 +249,7 @@ bool RLGR::decode()
 		}
 	}
 
-
+	resData->erase(resData->begin() + resData->size() - 1);
 	bitReadFile->close();
 	return true;
 }

@@ -51,10 +51,10 @@ public:
 	uint64_t p;
 	
 	//需要进行编码的数据
-	vector<uint64_t> codeData;
+	vector<uint64_t>* codeData;
 
 	//需要进行解码的结果
-	vector<uint64_t> resData;
+	vector<uint64_t> *resData;
 
 	//需要编码的symbol
 	uint64_t u;
@@ -63,7 +63,7 @@ public:
 	BitWriteFile *bitWriteFile;
 
 public:
-	RLGR(vector<uint64_t> &codeData, vector<uint64_t> &resData, RunType type= RunType::CompleteRun ,std::string fileName = "golombRicd.gr");
+	RLGR(vector<uint64_t> *codeData, vector<uint64_t> *resData ,std::string fileName = "golombRicd.gr");
 	~RLGR();
 
 	void initParam();
