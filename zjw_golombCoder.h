@@ -10,6 +10,7 @@
 #include <bitset>
 #include <fstream>
 #include <assert.h>
+#include <vector>
 #include "zjw_bitFile.h"
 
 
@@ -24,17 +25,22 @@ private:
 public:
 	BitReadFile  *bitReadFile;
 	BitWriteFile *bitWriteFile;
+	//需要进行编码的数据
+	vector<uint64_t>* codeData;
+	//需要进行解码的结果
+	vector<uint64_t> *resData;
 
 public:
 	//传递K值
-	GolombCoder(uint64_t k, string fileName="golombRicd.gr");
+	GolombCoder(vector<uint64_t> *codeData, vector<uint64_t> *resData, 
+		uint64_t k, string fileName="golombRicd.gr");
 	~GolombCoder();
 
 	//对num进行Golomb Rice的编码
-	void encode(uint64_t num);
+	void encode();
 
 	//解析出来的返回值：num,返回false表示以及解析到文件末尾。
-	bool decode(uint64_t& num);
+	bool decode();
 
 	void setK(uint64_t k_);
 

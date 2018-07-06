@@ -1,7 +1,10 @@
 #include "zjw_golombCoder.h"
 
-GolombCoder::GolombCoder(uint64_t k, string fileName)
+GolombCoder::GolombCoder(vector<uint64_t> *codeData, vector<uint64_t> *resData, uint64_t k, string fileName)
 {
+	this->codeData = codeData;
+	this->resData = resData;
+
 	this->k = k;
 	//Golomb Rice 
 	m = pow(2, k);
@@ -20,14 +23,32 @@ GolombCoder::~GolombCoder()
 		delete bitWriteFile;
 }
 
-void  GolombCoder::encode(uint64_t num)
+void  GolombCoder::encode()
 {
-	rice_golombEncode(num);
+	bitWriteFile->open();
+
+	for (int i = 0; i < codeData->size(); i++)
+	{
+		rice_golombEncode((*codeData)[i]);
+	}
+
+	bitWriteFile->close();
+
 }
 
-bool GolombCoder::decode(uint64_t & num)
+bool GolombCoder::decode()
 {
-	return rice_golombDecode(num);
+	resData->clear();
+	bitReadFile->open();
+
+	uint64_t temp;
+	for (int i = 0; i < codeData->size(); i++)
+	{
+		rice_golombDecode(temp);
+		resData->push_back(temp);
+	}
+	bitReadFile->close();
+	return true;
 }
 
 void GolombCoder::setK(uint64_t k_)

@@ -7,21 +7,27 @@
 using namespace std;
 int main()
 {
+	void GR_example();
 	void RLGR_example();
 	void RLGR_example2();
 
-	RLGR_example2();
+	GR_example();
 	
 }
 
 void GR_example()
 {
-	int max = 20;
-	//十万
-	//int length = 100000;
-
-	int length = 100;
 	int k = 8;
+
+	int max = 20;
+
+	int length = 10000;
+
+
+	//uint64_t表示的是 unsigned long long。
+	vector<uint64_t> numsList;
+	vector<uint64_t> resList;
+
 
 	///////////////////////////////////////////////////////
 	//
@@ -36,50 +42,42 @@ void GR_example()
 	codeOfs.open("code.txt");
 	//random number generator
 	std::random_device rd;
-	for (int n = 0; n < length; ++n)
+	for (int n = 0; n < length - 1; ++n)
 	{
-		nums[n] = rd() % max;
-		codeOfs << nums[n] << endl;
+		numsList.push_back(rd() % max);
+		codeOfs << numsList[n] << endl;
 	}
+	numsList.push_back(10);
+	codeOfs << numsList[length - 1] << endl;
+
 	codeOfs.close();
 
-	///////////////////////////////////////////////////////
-	//
-	// encoder
-	//
-	//////////////////////////////////////////////////////
-
-	GolombCoder coder = GolombCoder(k);
-
-	coder.bitWriteFile->open();
-
-	coder.encode(18);
-	for (int i = 0; i < length; i++)
-	{
-		coder.encode(nums[i]);
-	}
-
-	coder.bitWriteFile->close();
 
 	///////////////////////////////////////////////////////
 	//
-	// decoder version 1
+	// encoder and decoder
 	//
 	//////////////////////////////////////////////////////
-	coder.bitReadFile->open();
+	GolombCoder coder = GolombCoder(&numsList, &resList,k);
+	coder.encode();
+	coder.decode();
+
+
+	///////////////////////////////////////////////////////
+	//
+	// save the decoder info to file
+	//
+	//////////////////////////////////////////////////////
+	assert(resList.size() == numsList.size());
 
 	ofstream of;
 	of.open("decode.txt");
 
-	uint64_t res = 0;
-	coder.decode(res);
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < resList.size(); i++)
 	{
-		coder.decode(res);
-		of << res << endl;
+		of << resList[i] << endl;
 	}
 	of.close();
-	coder.bitReadFile->close();
 
 	return ;
 }
